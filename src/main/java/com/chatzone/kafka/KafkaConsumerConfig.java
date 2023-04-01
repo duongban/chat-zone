@@ -26,6 +26,8 @@ package com.chatzone.kafka;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -39,10 +41,12 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
  * @author duongban
  */
 public class KafkaConsumerConfig {
-
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerConfig.class);
+    
     @Value("${kafka.config.consumer}")
     private String consumerConfigFilePath;
-
+    
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         try {
@@ -53,11 +57,11 @@ public class KafkaConsumerConfig {
             }
             return new DefaultKafkaConsumerFactory(props);
         } catch (IOException ex) {
-            System.out.println(ex);
+            LOGGER.error(ex.getMessage(), ex);
         }
         return null;
     }
-
+    
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();

@@ -19,8 +19,9 @@ import com.chatzone.model.Message;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -32,20 +33,24 @@ import org.springframework.kafka.core.ProducerFactory;
  */
 @Configuration
 public class KafkaProducerConfig {
-
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducerConfig.class);
+    
     @Value("${kafka.config.producer}")
     private String producerConfigFilePath;
-
+    
     public KafkaTemplate<String, Message> kafkaTemplate() {
         try {
             Properties props = new Properties();
-            try (InputStream input = getClass().getClassLoader().getResourceAsStream(producerConfigFilePath)) {
+            try (InputStream input = getClass().getClassLoader()
+                    .getResourceAsStream(producerConfigFilePath)) {
                 props.load(input);
             }
-            ProducerFactory<String, Message> producerFactory = new DefaultKafkaProducerFactory(props);
+            ProducerFactory<String, Message> producerFactory
+                    = new DefaultKafkaProducerFactory(props);
             return new KafkaTemplate<>(producerFactory);
         } catch (IOException ex) {
-            System.out.println(ex);
+            LOGGER.error(ex.getMessage(), ex);
         }
         return null;
     }

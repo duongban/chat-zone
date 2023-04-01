@@ -16,6 +16,7 @@
 package com.chatzone.kafka;
 
 import com.chatzone.model.Message;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class KafkaProducerService {
 
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(KafkaProducerService.class);
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
     @Autowired
@@ -36,9 +38,9 @@ public class KafkaProducerService {
 
     public void sendMessage(String kafkaTopic, Message message) {
         try {
-            System.out.println(kafkaTemplate.send(kafkaTopic, message).get());
+            kafkaTemplate.send(kafkaTopic, message).get();
         } catch (Exception ex) {
-
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 
