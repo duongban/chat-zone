@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.12.4",
+    "@emotion/styled": "^11.10.8",
+    "@mui/material": "^5.12.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -13,6 +14,7 @@
     "react-dom": "^18.2.0",
     "react-stomp": "^5.1.0",
     "sockjs": "^0.3.24",
+    "sockjs-client": "^1.6.1",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
