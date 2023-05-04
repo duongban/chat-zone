@@ -1,21 +1,29 @@
-import React, { useState, useRef } from 'react';
-import SockJsClient from 'react-stomp';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Input from './components/Input/Input';
 import LoginForm from './components/LoginForm';
 import Messages from './components/Messages/Messages';
 import { randomColor } from './utils/common';
-
+import SockJS from 'sockjs-client';
+import Stomp from 'webstomp-client';
 
 const SOCKET_URL = 'http://localhost:8085/ws/';
+let client;
 
 const App = () => {
   const [messages, setMessages] = useState([])
   const [user, setUser] = useState(null)
-  const clientRef = useRef(null);
+  const [connectedUsers, setConnectedUsers] = useState([]);
 
-  let onConnected = () => {
+
+  let onConnected = (username) => {
     console.log("Connected!!")
+
+    client.subscribe('/topic/group', (message) => {
+      onMessageReceived(JSON.parse(message.body));
+    });
+
+    sendNewUser(username);
   }
 
   let onDisconnected = () => {
@@ -24,7 +32,11 @@ const App = () => {
 
   let onMessageReceived = (msg) => {
     console.log('New Message Received!!', msg);
-    setMessages(messages => messages.concat(msg));
+    if (msg.content === 'newUser') {
+      setConnectedUsers((users) => [...users, msg.sender]);
+    } else {
+      setMessages((messages) => messages.concat(msg));
+    }
   }
 
   let onSendMessage = (msgText) => {
@@ -32,7 +44,11 @@ const App = () => {
       sender: user.username,
       content: msgText
     }
-    clientRef.current.sendMessage('/app/sendMessage', JSON.stringify(msg));
+    client.send('/app/sendMessage', JSON.stringify(msg));
+  }
+
+  let onError = (error) => {
+    console.log('Failed to connect to WebSocket server', error);
   }
 
   let handleLoginSubmit = (username) => {
@@ -42,21 +58,32 @@ const App = () => {
       username: username,
       color: randomColor()
     })
+
+    const socket = new SockJS(SOCKET_URL);
+    client = Stomp.over(socket);
+    client.debug = () => { };
+    client.connect({}, () => onConnected(username), onError);
+    client.disconnect = onDisconnected;
+
   }
+
+  let sendNewUser = (username) => {
+    const msg = {
+      sender: username,
+      content: 'newUser',
+    };
+    client.send('/app/newUser', JSON.stringify(msg));
+  };
+
+  useEffect(() => {
+    console.log(connectedUsers);
+  }, [connectedUsers]);
 
   return (
     <div className="App">
       {!!user ?
         (
           <>
-            <SockJsClient
-              url={SOCKET_URL}
-              topics={['/topic/group']}
-              onConnect={onConnected}
-              onDisconnect={onDisconnected}
-              onMessage={msg => onMessageReceived(msg)}
-              ref={(client) => (clientRef.current = client)}
-            />
             <Messages
               messages={messages}
               currentUser={user}
