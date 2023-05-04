@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import SockJsClient from 'react-stomp';
 import './App.css';
 import Input from './components/Input/Input';
 import LoginForm from './components/LoginForm';
 import Messages from './components/Messages/Messages';
-import chatAPI from './services/chatapi';
 import { randomColor } from './utils/common';
 
 
@@ -13,22 +12,27 @@ const SOCKET_URL = 'http://localhost:8085/ws/';
 const App = () => {
   const [messages, setMessages] = useState([])
   const [user, setUser] = useState(null)
+  const clientRef = useRef(null);
 
   let onConnected = () => {
     console.log("Connected!!")
   }
 
+  let onDisconnected = () => {
+    console.log("Disconnected!!")
+  }
+
   let onMessageReceived = (msg) => {
     console.log('New Message Received!!', msg);
-    setMessages(messages.concat(msg));
+    setMessages(messages => messages.concat(msg));
   }
 
   let onSendMessage = (msgText) => {
-    chatAPI.sendMessage(user.username, msgText).then(res => {
-      console.log('Sent', res);
-    }).catch(err => {
-      console.log('Error Occured while sending message to api');
-    })
+    let msg = {
+      sender: user.username,
+      content: msgText
+    }
+    clientRef.current.sendMessage('/app/sendMessage', JSON.stringify(msg));
   }
 
   let handleLoginSubmit = (username) => {
@@ -38,7 +42,6 @@ const App = () => {
       username: username,
       color: randomColor()
     })
-
   }
 
   return (
@@ -50,9 +53,9 @@ const App = () => {
               url={SOCKET_URL}
               topics={['/topic/group']}
               onConnect={onConnected}
-              onDisconnect={console.log("Disconnected!")}
+              onDisconnect={onDisconnected}
               onMessage={msg => onMessageReceived(msg)}
-              debug={false}
+              ref={(client) => (clientRef.current = client)}
             />
             <Messages
               messages={messages}
