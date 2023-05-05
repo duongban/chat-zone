@@ -55,9 +55,9 @@ public class MessageController {
     }
 
     @MessageMapping("/sendMessage")
-    @SendTo("/topic/group")
-    public Message broadcastGroupMessage(@Payload Message message) {
-        return message;
+    public void broadcastGroupMessage(@Payload Message message) {
+        message.setTimestamp(System.currentTimeMillis());
+        service.sendMessage(message);
     }
 
     @MessageMapping("/newUser")

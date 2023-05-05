@@ -47,6 +47,5 @@ public class MessageService {
 
     public void sendMessage(Message msg) {
         kafkaProducer.sendMessage(kafkaTopic, msg);
-
     }
 }
