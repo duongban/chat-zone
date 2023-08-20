@@ -23,13 +23,12 @@
  */
 package com.chatzone.controller;
 
-import com.chatzone.model.Message;
-import com.chatzone.service.MessageService;
+import com.chatzone.model.Authen;
+import com.chatzone.service.inf.IUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,32 +38,17 @@ import org.springframework.web.bind.annotation.RestController;
  * @author duongban
  */
 @RestController
-public class MessageController {
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+public class AuthenController {
 
-    private final MessageService service;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenController.class);
 
     @Autowired
-    public MessageController(MessageService service) {
-        this.service = service;
-    }
+    private IUserService userService;
 
-    @PostMapping(value = "/api/send", consumes = "application/json", produces = "application/json")
-    public void sendMessage(@RequestBody Message message) {
-        message.setTimestamp(System.currentTimeMillis());
-        service.sendMessage(message);
-    }
-
-    @MessageMapping("/sendMessage")
-    public void broadcastGroupMessage(@Payload Message message) {
-        message.setTimestamp(System.currentTimeMillis());
-        service.sendMessage(message);
-    }
-
-    @MessageMapping("/newUser")
-    @SendTo("/topic/group")
-    public Message addUser(@Payload Message message,
-            SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", message.getSender());
-        return message;
+    @PostMapping(value = "/api/register", consumes = "application/json", produces = "application/json")
+    public void register(@RequestBody Authen auth) {
+        LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
+        System.out.println(userService.create(auth));
     }
 }
