@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Input from './components/Input/Input';
-import LoginForm from './components/LoginForm';
+import AuthForm from './components/AuthForm';
 import Messages from './components/Messages/Messages';
 import { randomColor } from './utils/common';
 import SockJS from 'sockjs-client';
 import Stomp from 'webstomp-client';
+import chatAPI from './services/chatapi';
 
 const SOCKET_URL = 'http://localhost:8085/ws/';
 let client;
@@ -51,8 +52,9 @@ const App = () => {
     console.log('Failed to connect to WebSocket server', error);
   }
 
-  let handleLoginSubmit = (username) => {
+  let handleLoginSubmit = (username, password) => {
     console.log(username, " Logged in..");
+    console.log(`Login pass ${password}`)
 
     setUser({
       username: username,
@@ -65,6 +67,15 @@ const App = () => {
     client.connect({}, () => onConnected(username), onError);
     client.disconnect = onDisconnected;
 
+  }
+
+  let handleRegisterSubmit = (username, password) => {
+    console.log(`Register username ${username} pass ${password}`)
+    chatAPI.register(username, password).then(res => {
+      console.log('Register', res);
+    }).catch(err => {
+      console.log('Error register', err);
+    })
   }
 
   let sendNewUser = (username) => {
@@ -91,7 +102,7 @@ const App = () => {
             <Input onSendMessage={onSendMessage} />
           </>
         ) :
-        <LoginForm onSubmit={handleLoginSubmit} />
+        <AuthForm onLogin={handleLoginSubmit} onRegister={handleRegisterSubmit} />
       }
     </div>
   )
