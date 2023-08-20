@@ -16,6 +16,14 @@ const chatAPI = {
             content: text
         }
         return api.post(`send`, msg);
+    },
+
+    register: (username, password) => {
+        let msg = {
+            username,
+            password,
+        }
+        return api.post(`register`, msg);
     }
 }
 
