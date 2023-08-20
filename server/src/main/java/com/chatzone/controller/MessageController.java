@@ -24,7 +24,7 @@
 package com.chatzone.controller;
 
 import com.chatzone.model.Message;
-import com.chatzone.service.MessageService;
+import com.chatzone.service.inf.IMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -41,10 +41,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MessageController {
 
-    private final MessageService service;
+    private final IMessageService service;
 
     @Autowired
-    public MessageController(MessageService service) {
+    public MessageController(IMessageService service) {
         this.service = service;
     }
 
