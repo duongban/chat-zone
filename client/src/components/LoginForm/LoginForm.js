@@ -4,11 +4,18 @@ import Button from '@mui/material/Button';
 
 const LoginForm = ({ onSubmit }) => {
 
-    const [username, setUsername] = useState("");
-    let handleUserNameChange = event => setUsername(event.target.value);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleUsernameChange = (event) => {
+        setUsername(event.target.value);
+    };
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
+    };
 
     let handleSubmit = () => {
-        onSubmit(username);
+        onSubmit(username, password);
     }
 
     return (
@@ -16,18 +23,19 @@ const LoginForm = ({ onSubmit }) => {
             <TextField
                 label="Type your username"
                 placeholder="Username"
-                onChange={handleUserNameChange}
+                onChange={handleUsernameChange}
                 margin="normal"
-                onKeyPress={event => {
-                    if (event.key === 'Enter') {
-                        handleSubmit();
-                    }
-                }}
+            />
+            <TextField
+                label="Type your password"
+                placeholder="Password"
+                onChange={handlePasswordChange}
+                margin="normal"
             />
             <br />
             <Button variant="contained" color="primary" onClick={handleSubmit} >
                 Login
-             </Button>
+            </Button>
 
         </div>
     )
