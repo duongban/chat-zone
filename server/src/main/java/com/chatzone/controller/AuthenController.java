@@ -23,11 +23,15 @@
  */
 package com.chatzone.controller;
 
+import com.chatzone.db.entity.UserEntity;
+import com.chatzone.model.ApiResponse;
 import com.chatzone.model.Authen;
+import com.chatzone.model.ECode;
 import com.chatzone.service.inf.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,15 +44,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthenController {
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenController.class);
-
+    
     @Autowired
     private IUserService userService;
-
+    
+    @Autowired
+    private ApiResponse apiResp;
+    
     @PostMapping(value = "/api/register", consumes = "application/json", produces = "application/json")
-    public void register(@RequestBody Authen auth) {
-        LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
-        System.out.println(userService.create(auth));
+    public ApiResponse register(@RequestBody Authen auth) {
+        ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
+        try {
+            LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
+            Pair<ECode, UserEntity> ret = userService.create(auth);
+            if (ECode.isFailed(ret.getFirst())) {
+                return apiResp.getApiResponse(ret.getFirst());
+            }
+            resp.setData(ret.getSecond());
+            return resp;
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            resp = apiResp.getApiResponse(ECode.EXCEPTION);
+        }
+        return resp;
     }
 }
