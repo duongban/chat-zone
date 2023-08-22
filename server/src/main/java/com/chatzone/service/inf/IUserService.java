@@ -25,6 +25,8 @@ package com.chatzone.service.inf;
 
 import com.chatzone.db.entity.UserEntity;
 import com.chatzone.model.Authen;
+import com.chatzone.model.ECode;
+import org.springframework.data.util.Pair;
 
 /**
  *
@@ -32,5 +34,5 @@ import com.chatzone.model.Authen;
  */
 public interface IUserService {
 
-    public UserEntity create(Authen user);
+    public Pair<ECode, UserEntity> create(Authen user);
 }
