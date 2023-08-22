@@ -7,6 +7,7 @@ import { randomColor } from './utils/common';
 import SockJS from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import chatAPI from './services/chatapi';
+import Popup from './components/Popup/Popup'
 
 const SOCKET_URL = 'http://localhost:8085/ws/';
 let client;
@@ -15,6 +16,8 @@ const App = () => {
   const [messages, setMessages] = useState([])
   const [user, setUser] = useState(null)
   const [connectedUsers, setConnectedUsers] = useState([]);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
 
   let onConnected = (username) => {
@@ -72,10 +75,14 @@ const App = () => {
   let handleRegisterSubmit = (username, password) => {
     console.log(`Register username ${username} pass ${password}`)
     chatAPI.register(username, password).then(res => {
-      console.log('Register', res);
+      if (res.data.err_code !== 0) {
+        setErrorMessage(res.data.err_msg);
+        setShowErrorPopup(true);
+      }
     }).catch(err => {
       console.log('Error register', err);
     })
+    setShowErrorPopup(false);
   }
 
   let sendNewUser = (username) => {
@@ -104,6 +111,10 @@ const App = () => {
         ) :
         <AuthForm onLogin={handleLoginSubmit} onRegister={handleRegisterSubmit} />
       }
+
+      {showErrorPopup && (
+        <Popup message={errorMessage} />
+      )}
     </div>
   )
 }
