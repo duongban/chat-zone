@@ -26,10 +26,12 @@ package com.chatzone.service;
 import com.chatzone.db.entity.UserEntity;
 import com.chatzone.db.repository.UserRepository;
 import com.chatzone.model.Authen;
+import com.chatzone.model.ECode;
 import com.chatzone.service.inf.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,11 +47,22 @@ public class UserService implements IUserService {
     private UserRepository repo;
 
     @Override
-    public UserEntity create(Authen user) {
-        UserEntity data = new UserEntity();
-        data.setUsername(user.getUsername());
-        data.setPassword(user.getPassword());
-        return repo.save(data);
+    public Pair<ECode, UserEntity> create(Authen user) {
+        Pair<ECode, UserEntity> ret = Pair.of(ECode.SUCCESS, new UserEntity());
+        try {
+            UserEntity data = repo.findByUsername(user.getUsername());
+            if (data != null) {
+                return Pair.of(ECode.ALREADY_EXISTS_USERNAME, data);
+            }
+            data = new UserEntity();
+            data.setUsername(user.getUsername());
+            data.setPassword(user.getPassword());
+            ret = Pair.of(ECode.SUCCESS, repo.save(data));
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            ret = Pair.of(ECode.EXCEPTION, new UserEntity());
+        }
+        return ret;
     }
 
 }
