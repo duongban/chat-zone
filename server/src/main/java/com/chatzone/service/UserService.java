@@ -65,4 +65,13 @@ public class UserService implements IUserService {
         return ret;
     }
 
+    @Override
+    public Pair<ECode, UserEntity> get(Authen user) {
+        UserEntity ret = repo.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+        if (ret == null) {
+            return Pair.of(ECode.INVALID_USERNAME_OR_PASSWORD, new UserEntity());
+        }
+        return Pair.of(ECode.SUCCESS, ret);
+    }
+
 }
