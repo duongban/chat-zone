@@ -62,7 +62,23 @@ public class AuthenController {
             if (ECode.isFailed(ret.getFirst())) {
                 return apiResp.getApiResponse(ret.getFirst());
             }
-            resp.setData(ret.getSecond());
+            return resp;
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            resp = apiResp.getApiResponse(ECode.EXCEPTION);
+        }
+        return resp;
+    }
+    
+    @PostMapping(value = "/api/login", consumes = "application/json", produces = "application/json")
+    public ApiResponse login(@RequestBody Authen auth) {
+        ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
+        try {
+            LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
+            Pair<ECode, UserEntity> ret = userService.get(auth);
+            if (ECode.isFailed(ret.getFirst())) {
+                return apiResp.getApiResponse(ret.getFirst());
+            }
             return resp;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

@@ -35,4 +35,6 @@ import org.springframework.data.util.Pair;
 public interface IUserService {
 
     public Pair<ECode, UserEntity> create(Authen user);
+    
+    public Pair<ECode, UserEntity> get(Authen user);
 }
