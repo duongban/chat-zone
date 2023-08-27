@@ -21,33 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.chatzone.service;
-
-import com.chatzone.kafka.KafkaProducerService;
-import com.chatzone.model.Message;
-import com.chatzone.service.inf.IMessageService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+package com.chatzone.model;
 
 /**
  *
  * @author duongban
  */
-@Service
-public class MessageService implements IMessageService{
+public class Authen {
 
-    @Value("${kafka.topic}")
-    private String kafkaTopic;
-    private final KafkaProducerService kafkaProducer;
+    private String username;
+    private String password;
 
-    @Autowired
-    public MessageService(KafkaProducerService kafkaProducer) {
-        this.kafkaProducer = kafkaProducer;
+    public String getUsername() {
+        return username;
     }
 
-    @Override
-    public void sendMessage(Message msg) {
-        kafkaProducer.sendMessage(kafkaTopic, msg);
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

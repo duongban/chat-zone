@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import { TextField, Button } from '@mui/material';
 
-const LoginForm = ({ onSubmit }) => {
-
+const RegisterForm = ({ onSubmit }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
     };
+
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
     };
 
-    let handleSubmit = () => {
+    const handleSubmit = (event) => {
+        event.preventDefault();
         onSubmit(username, password);
-    }
+    };
 
     return (
         <div>
@@ -34,11 +34,11 @@ const LoginForm = ({ onSubmit }) => {
             />
             <br />
             <Button variant="contained" color="primary" onClick={handleSubmit} >
-                Login
+                Register
             </Button>
 
         </div>
     )
-}
+};
 
-export default LoginForm
+export default RegisterForm;

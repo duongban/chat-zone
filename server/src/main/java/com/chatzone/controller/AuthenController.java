@@ -23,13 +23,16 @@
  */
 package com.chatzone.controller;
 
-import com.chatzone.model.Message;
-import com.chatzone.service.inf.IMessageService;
+import com.chatzone.db.entity.UserEntity;
+import com.chatzone.model.ApiResponse;
+import com.chatzone.model.Authen;
+import com.chatzone.model.ECode;
+import com.chatzone.service.inf.IUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.data.util.Pair;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,32 +42,32 @@ import org.springframework.web.bind.annotation.RestController;
  * @author duongban
  */
 @RestController
-public class MessageController {
-
-    private final IMessageService service;
-
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+public class AuthenController {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenController.class);
+    
     @Autowired
-    public MessageController(IMessageService service) {
-        this.service = service;
-    }
-
-    @PostMapping(value = "/api/send", consumes = "application/json", produces = "application/json")
-    public void sendMessage(@RequestBody Message message) {
-        message.setTimestamp(System.currentTimeMillis());
-        service.sendMessage(message);
-    }
-
-    @MessageMapping("/sendMessage")
-    public void broadcastGroupMessage(@Payload Message message) {
-        message.setTimestamp(System.currentTimeMillis());
-        service.sendMessage(message);
-    }
-
-    @MessageMapping("/newUser")
-    @SendTo("/topic/group")
-    public Message addUser(@Payload Message message,
-            SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", message.getSender());
-        return message;
+    private IUserService userService;
+    
+    @Autowired
+    private ApiResponse apiResp;
+    
+    @PostMapping(value = "/api/register", consumes = "application/json", produces = "application/json")
+    public ApiResponse register(@RequestBody Authen auth) {
+        ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
+        try {
+            LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
+            Pair<ECode, UserEntity> ret = userService.create(auth);
+            if (ECode.isFailed(ret.getFirst())) {
+                return apiResp.getApiResponse(ret.getFirst());
+            }
+            resp.setData(ret.getSecond());
+            return resp;
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            resp = apiResp.getApiResponse(ECode.EXCEPTION);
+        }
+        return resp;
     }
 }

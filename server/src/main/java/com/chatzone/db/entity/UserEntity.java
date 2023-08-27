@@ -21,33 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.chatzone.service;
+package com.chatzone.db.entity;
 
-import com.chatzone.kafka.KafkaProducerService;
-import com.chatzone.model.Message;
-import com.chatzone.service.inf.IMessageService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  *
  * @author duongban
  */
-@Service
-public class MessageService implements IMessageService{
+@Document(collection = "users")
+@Getter
+@Setter
+public class UserEntity {
 
-    @Value("${kafka.topic}")
-    private String kafkaTopic;
-    private final KafkaProducerService kafkaProducer;
-
-    @Autowired
-    public MessageService(KafkaProducerService kafkaProducer) {
-        this.kafkaProducer = kafkaProducer;
-    }
-
-    @Override
-    public void sendMessage(Message msg) {
-        kafkaProducer.sendMessage(kafkaTopic, msg);
-    }
+    @Id
+    private String id;
+    private String username;
+    private String password;
 }
