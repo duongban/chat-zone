@@ -56,20 +56,25 @@ const App = () => {
   }
 
   let handleLoginSubmit = (username, password) => {
-    console.log(username, " Logged in..");
-    console.log(`Login pass ${password}`)
+    chatAPI.login(username, password).then(res => {
+      if (res.data.err_code !== 0) {
+        setErrorMessage(res.data.err_msg);
+        setShowErrorPopup(true);
+        return;
+      }
+      setUser({
+        username: username,
+        color: randomColor()
+      })
 
-    setUser({
-      username: username,
-      color: randomColor()
+      const socket = new SockJS(SOCKET_URL);
+      client = Stomp.over(socket);
+      client.debug = () => { };
+      client.connect({}, () => onConnected(username), onError);
+      client.disconnect = onDisconnected;
+    }).catch(err => {
+      console.log('Error login', err);
     })
-
-    const socket = new SockJS(SOCKET_URL);
-    client = Stomp.over(socket);
-    client.debug = () => { };
-    client.connect({}, () => onConnected(username), onError);
-    client.disconnect = onDisconnected;
-
   }
 
   let handleRegisterSubmit = (username, password) => {

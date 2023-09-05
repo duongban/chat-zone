@@ -24,6 +24,14 @@ const chatAPI = {
             password,
         }
         return api.post(`register`, msg);
+    },
+
+    login: (username, password) => {
+        let msg = {
+            username,
+            password,
+        }
+        return api.post(`login`, msg);
     }
 }
 
