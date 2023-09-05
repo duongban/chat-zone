@@ -21,42 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.chatzone.model;
+package com.chatzone.security;
 
-import lombok.Getter;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  *
  * @author duongban
  */
-@Getter
-public enum ECode {
-    SUCCESS(0),
-    FAILED(1),
-    EXCEPTION(2),
-    ALREADY_EXISTS_USERNAME(3),
-    INVALID_USERNAME_OR_PASSWORD(4),
-    NOT_EXSTS_ROOM(5),
-    NOT_DEFINED(10);
+@Configuration
+@EnableWebMvc
+public class CorsConfig implements WebMvcConfigurer {
 
-    private int value;
-
-    private ECode(int value) {
-        this.value = value;
-    }
-
-    public ECode findByValye(int value) {
-        int ecode = Math.abs(value);
-        switch (ecode) {
-            case 0:
-                return SUCCESS;
-            case 1:
-                return FAILED;
-        }
-        return NOT_DEFINED;
-    }
-
-    public static boolean isFailed(ECode ecode) {
-        return ecode != ECode.SUCCESS;
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedHeaders("*")
+                .allowedMethods("*");
     }
 }

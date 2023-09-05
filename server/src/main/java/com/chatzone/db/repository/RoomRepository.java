@@ -21,42 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.chatzone.model;
+package com.chatzone.db.repository;
 
-import lombok.Getter;
+import com.chatzone.db.entity.RoomEntity;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author duongban
  */
-@Getter
-public enum ECode {
-    SUCCESS(0),
-    FAILED(1),
-    EXCEPTION(2),
-    ALREADY_EXISTS_USERNAME(3),
-    INVALID_USERNAME_OR_PASSWORD(4),
-    NOT_EXSTS_ROOM(5),
-    NOT_DEFINED(10);
+@Repository
+public interface RoomRepository extends MongoRepository<RoomEntity, String> {
 
-    private int value;
-
-    private ECode(int value) {
-        this.value = value;
-    }
-
-    public ECode findByValye(int value) {
-        int ecode = Math.abs(value);
-        switch (ecode) {
-            case 0:
-                return SUCCESS;
-            case 1:
-                return FAILED;
-        }
-        return NOT_DEFINED;
-    }
-
-    public static boolean isFailed(ECode ecode) {
-        return ecode != ECode.SUCCESS;
-    }
+    RoomEntity findByCode(String code);
 }

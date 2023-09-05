@@ -18,7 +18,7 @@ const Popup = ({ message }) => {
       setOpen(true);
       const timeoutId = setTimeout(() => {
         setOpen(false);
-      }, 3000); // Change the timeout duration as needed
+      }, 30000); // Change the timeout duration as needed
 
       return () => {
         clearTimeout(timeoutId);

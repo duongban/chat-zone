@@ -21,42 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.chatzone.model;
+package com.chatzone.db.entity;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  *
  * @author duongban
  */
+@Document(collection = "rooms")
 @Getter
-public enum ECode {
-    SUCCESS(0),
-    FAILED(1),
-    EXCEPTION(2),
-    ALREADY_EXISTS_USERNAME(3),
-    INVALID_USERNAME_OR_PASSWORD(4),
-    NOT_EXSTS_ROOM(5),
-    NOT_DEFINED(10);
+@Setter
+public class RoomEntity {
 
-    private int value;
-
-    private ECode(int value) {
-        this.value = value;
-    }
-
-    public ECode findByValye(int value) {
-        int ecode = Math.abs(value);
-        switch (ecode) {
-            case 0:
-                return SUCCESS;
-            case 1:
-                return FAILED;
-        }
-        return NOT_DEFINED;
-    }
-
-    public static boolean isFailed(ECode ecode) {
-        return ecode != ECode.SUCCESS;
-    }
+    @Id
+    private String id;
+    private String name;
+    private String code;
 }

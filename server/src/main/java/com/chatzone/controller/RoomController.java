@@ -23,18 +23,21 @@
  */
 package com.chatzone.controller;
 
-import com.chatzone.db.entity.UserEntity;
+import com.chatzone.db.entity.RoomEntity;
 import com.chatzone.model.ApiResponse;
-import com.chatzone.model.Authen;
 import com.chatzone.model.ECode;
-import com.chatzone.service.inf.IUserService;
+import com.chatzone.model.Room;
+import com.chatzone.service.inf.IRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -42,26 +45,29 @@ import org.springframework.web.bind.annotation.RestController;
  * @author duongban
  */
 @RestController
-@RequestMapping(value = "/api", consumes = "application/json", produces = "application/json")
-public class AuthenController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenController.class);
-
+@RequestMapping(value = "/api")
+public class RoomController {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(RoomController.class);
+    
     @Autowired
-    private IUserService userService;
-
+    private IRoomService roomService;
+    
     @Autowired
     private ApiResponse apiResp;
-
-    @PostMapping(value = "/register")
-    public ApiResponse register(@RequestBody Authen auth) {
+    
+    @PostMapping(value = "/room")
+    public ApiResponse create(@RequestBody Room room) {
         ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
         try {
-            LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
-            Pair<ECode, UserEntity> ret = userService.create(auth);
+            Pair<ECode, RoomEntity> ret = roomService.create(room.getName());
             if (ECode.isFailed(ret.getFirst())) {
                 return apiResp.getApiResponse(ret.getFirst());
             }
+            Room data = new Room();
+            data.setName(ret.getSecond().getName());
+            data.setCode(ret.getSecond().getCode());
+            resp.setData(data);
             return resp;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -69,16 +75,19 @@ public class AuthenController {
         }
         return resp;
     }
-
-    @PostMapping(value = "/login")
-    public ApiResponse login(@RequestBody Authen auth) {
+    
+    @GetMapping(value = "/room/{code}")
+    public ApiResponse find(@PathVariable String code) {
         ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
         try {
-            LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
-            Pair<ECode, UserEntity> ret = userService.get(auth);
+            Pair<ECode, RoomEntity> ret = roomService.findByCode(code);
             if (ECode.isFailed(ret.getFirst())) {
                 return apiResp.getApiResponse(ret.getFirst());
             }
+            Room data = new Room();
+            data.setName(ret.getSecond().getName());
+            data.setCode(ret.getSecond().getCode());
+            resp.setData(data);
             return resp;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

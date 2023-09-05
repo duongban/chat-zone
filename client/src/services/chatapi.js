@@ -32,6 +32,17 @@ const chatAPI = {
             password,
         }
         return api.post(`login`, msg);
+    },
+
+    createRoom: (name) => {
+        let msg = {
+            name,
+        }
+        return api.post(`room`, msg);
+    },
+
+    findRoom: (code) => {
+        return api.get(`room/${code}`);
     }
 }
 

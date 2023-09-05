@@ -8,6 +8,7 @@ import SockJS from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import chatAPI from './services/chatapi';
 import Popup from './components/Popup/Popup'
+import Room from './components/Room';
 
 const SOCKET_URL = 'http://localhost:8085/ws/';
 let client;
@@ -18,6 +19,8 @@ const App = () => {
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [enteredRoom, setEnteredRoom] = useState(false);
+
 
 
   let onConnected = (username) => {
@@ -83,7 +86,10 @@ const App = () => {
       if (res.data.err_code !== 0) {
         setErrorMessage(res.data.err_msg);
         setShowErrorPopup(true);
+        return;
       }
+      setErrorMessage("Register success");
+      setShowErrorPopup(true);
     }).catch(err => {
       console.log('Error register', err);
     })
@@ -98,24 +104,56 @@ const App = () => {
     client.send('/app/newUser', JSON.stringify(msg));
   };
 
+  const handleCreateRoom = (roomName) => {
+    console.log(`Creating room: ${roomName}`);
+    chatAPI.createRoom(roomName).then(res => {
+      if (res.data.err_code !== 0) {
+        setErrorMessage(res.data.err_msg);
+        setShowErrorPopup(true);
+        return;
+      }
+      setErrorMessage("Create room success, Room code " + res.data.data.code);
+      setShowErrorPopup(true);
+      setEnteredRoom(true);
+    });
+    setShowErrorPopup(false);
+  };
+
+  const handleEnterRoom = (roomCode) => {
+    chatAPI.findRoom(roomCode).then(res => {
+      console.log(res.data);
+      if (res.data.err_code !== 0) {
+        setErrorMessage(res.data.err_msg);
+        setShowErrorPopup(true);
+        return;
+      }
+      setErrorMessage("Enter room success, Room name " + res.data.data.name);
+      setShowErrorPopup(true);
+      setEnteredRoom(true);
+    });
+    setShowErrorPopup(false);
+  };
+
   useEffect(() => {
     console.log(connectedUsers);
   }, [connectedUsers]);
 
   return (
     <div className="App">
-      {!!user ?
-        (
-          <>
-            <Messages
-              messages={messages}
-              currentUser={user}
-            />
-            <Input onSendMessage={onSendMessage} />
-          </>
-        ) :
+      {!!user && !enteredRoom ? (
+        <Room onCreateRoom={handleCreateRoom} onEnterRoom={handleEnterRoom} />
+      ) : null}
+
+      {!!user && enteredRoom ? (
+        <>
+          <Messages messages={messages} currentUser={user} />
+          <Input onSendMessage={onSendMessage} />
+        </>
+      ) : null}
+
+      {!user && (
         <AuthForm onLogin={handleLoginSubmit} onRegister={handleRegisterSubmit} />
-      }
+      )}
 
       {showErrorPopup && (
         <Popup message={errorMessage} />
