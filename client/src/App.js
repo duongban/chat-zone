@@ -112,18 +112,26 @@ const App = () => {
         setShowErrorPopup(true);
         return;
       }
-      console.log(res.data)
-      console.log(res.data.code);
-      setErrorMessage("Create room success\r\nRoom code " + res.data.data.code);
+      setErrorMessage("Create room success, Room code " + res.data.data.code);
       setShowErrorPopup(true);
+      setEnteredRoom(true);
     });
     setShowErrorPopup(false);
-    setEnteredRoom(true);
   };
 
   const handleEnterRoom = (roomCode) => {
-    console.log(`Entering room with code: ${roomCode}`);
-    setEnteredRoom(true);
+    chatAPI.findRoom(roomCode).then(res => {
+      console.log(res.data);
+      if (res.data.err_code !== 0) {
+        setErrorMessage(res.data.err_msg);
+        setShowErrorPopup(true);
+        return;
+      }
+      setErrorMessage("Enter room success, Room name " + res.data.data.name);
+      setShowErrorPopup(true);
+      setEnteredRoom(true);
+    });
+    setShowErrorPopup(false);
   };
 
   useEffect(() => {
