@@ -39,6 +39,10 @@ const chatAPI = {
             name,
         }
         return api.post(`room`, msg);
+    },
+
+    findRoom: (code) => {
+        return api.get(`room/${code}`);
     }
 }
 
