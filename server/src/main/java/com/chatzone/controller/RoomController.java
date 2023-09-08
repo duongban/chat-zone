@@ -32,9 +32,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -42,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author duongban
  */
 @RestController
-@RequestMapping(value = "/api", consumes = "application/json", produces = "application/json")
+@RequestMapping(value = "/api")
 public class RoomController {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomController.class);
@@ -54,10 +57,30 @@ public class RoomController {
     private ApiResponse apiResp;
     
     @PostMapping(value = "/room")
-    public ApiResponse create(@RequestBody String name) {
+    public ApiResponse create(@RequestBody Room room) {
         ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
         try {
-            Pair<ECode, RoomEntity> ret = roomService.create(name);
+            Pair<ECode, RoomEntity> ret = roomService.create(room.getName());
+            if (ECode.isFailed(ret.getFirst())) {
+                return apiResp.getApiResponse(ret.getFirst());
+            }
+            Room data = new Room();
+            data.setName(ret.getSecond().getName());
+            data.setCode(ret.getSecond().getCode());
+            resp.setData(data);
+            return resp;
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            resp = apiResp.getApiResponse(ECode.EXCEPTION);
+        }
+        return resp;
+    }
+    
+    @GetMapping(value = "/room/{code}")
+    public ApiResponse find(@PathVariable String code) {
+        ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
+        try {
+            Pair<ECode, RoomEntity> ret = roomService.findByCode(code);
             if (ECode.isFailed(ret.getFirst())) {
                 return apiResp.getApiResponse(ret.getFirst());
             }
