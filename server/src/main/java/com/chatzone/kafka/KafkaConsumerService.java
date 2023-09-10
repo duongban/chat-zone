@@ -38,15 +38,15 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
  */
 @Service
 public class KafkaConsumerService {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerService.class);
-    
+
     @Autowired
     SimpMessagingTemplate template;
-    
+
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group.id}")
     public void receive(ConsumerRecord<String, Message> record) {
-        LOGGER.info(String.format("received msg[%s]", record.value()));
-        template.convertAndSend("/topic/group", record.value());
+        LOGGER.info(String.format("received key[%s] msg[%s]", record.key(), record.value()));
+        template.convertAndSend(String.format("/topic/group/%s", record.key()), record.value());
     }
 }
