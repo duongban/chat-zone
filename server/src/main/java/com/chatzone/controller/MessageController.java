@@ -25,14 +25,15 @@ package com.chatzone.controller;
 
 import com.chatzone.model.Message;
 import com.chatzone.service.inf.IMessageService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 
 /**
  *
@@ -48,16 +49,10 @@ public class MessageController {
         this.service = service;
     }
 
-    @PostMapping(value = "/api/send", consumes = "application/json", produces = "application/json")
-    public void sendMessage(@RequestBody Message message) {
+    @MessageMapping("/sendMessage/{roomCode}")
+    public void broadcastGroupMessage(@DestinationVariable String roomCode, @Payload Message message) {
         message.setTimestamp(System.currentTimeMillis());
-        service.sendMessage(message);
-    }
-
-    @MessageMapping("/sendMessage")
-    public void broadcastGroupMessage(@Payload Message message) {
-        message.setTimestamp(System.currentTimeMillis());
-        service.sendMessage(message);
+        service.sendMessage(roomCode, message);
     }
 
     @MessageMapping("/newUser")
