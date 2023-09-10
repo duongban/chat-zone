@@ -23,6 +23,8 @@
  */
 package com.chatzone.service;
 
+import com.chatzone.db.entity.MessageEntity;
+import com.chatzone.db.repository.MessageRepository;
 import com.chatzone.kafka.KafkaProducerService;
 import com.chatzone.model.Message;
 import com.chatzone.service.inf.IMessageService;
@@ -36,18 +38,27 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class MessageService implements IMessageService {
-
+    
     @Value("${kafka.topic}")
     private String kafkaTopic;
     private final KafkaProducerService kafkaProducer;
-
+    
+    @Autowired
+    private MessageRepository repo;
+    
     @Autowired
     public MessageService(KafkaProducerService kafkaProducer) {
         this.kafkaProducer = kafkaProducer;
     }
-
+    
     @Override
     public void sendMessage(String roomCode, Message msg) {
         kafkaProducer.sendMessage(kafkaTopic, roomCode, msg);
+        MessageEntity entity = new MessageEntity();
+        entity.setRoomCode(roomCode);
+        entity.setSender(msg.getSender());
+        entity.setContent(msg.getContent());
+        entity.setTimestamp(msg.getTimestamp());
+        repo.save(entity);
     }
 }

@@ -25,6 +25,10 @@ const App = () => {
   let onConnected = (username, roomCode) => {
     console.log("Connected!!")
 
+    client.subscribe(`/user/queue/load-history`, (message) => {
+      onMessageReceived(JSON.parse(message.body));
+    });
+
     client.subscribe(`/topic/group/${roomCode}`, (message) => {
       onMessageReceived(JSON.parse(message.body));
     });
