@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
  * @author duongban
  */
 @Service
-public class MessageService implements IMessageService{
+public class MessageService implements IMessageService {
 
     @Value("${kafka.topic}")
     private String kafkaTopic;
@@ -47,7 +47,7 @@ public class MessageService implements IMessageService{
     }
 
     @Override
-    public void sendMessage(Message msg) {
-        kafkaProducer.sendMessage(kafkaTopic, msg);
+    public void sendMessage(String roomCode, Message msg) {
+        kafkaProducer.sendMessage(kafkaTopic, roomCode, msg);
     }
 }

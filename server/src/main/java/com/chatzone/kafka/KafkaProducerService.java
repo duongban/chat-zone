@@ -44,4 +44,12 @@ public class KafkaProducerService {
         }
     }
 
+    public void sendMessage(String kafkaTopic, String key, Message message) {
+        try {
+            kafkaTemplate.send(kafkaTopic, key, message).get();
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+    }
+
 }

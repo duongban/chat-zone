@@ -20,13 +20,12 @@ const App = () => {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [enteredRoom, setEnteredRoom] = useState(false);
+  const [roomCode, setRoomCode] = useState(null);
 
-
-
-  let onConnected = (username) => {
+  let onConnected = (username, roomCode) => {
     console.log("Connected!!")
 
-    client.subscribe('/topic/group', (message) => {
+    client.subscribe(`/topic/group/${roomCode}`, (message) => {
       onMessageReceived(JSON.parse(message.body));
     });
 
@@ -51,7 +50,7 @@ const App = () => {
       sender: user.username,
       content: msgText
     }
-    client.send('/app/sendMessage', JSON.stringify(msg));
+    client.send(`/app/sendMessage/${roomCode}`, JSON.stringify(msg));
   }
 
   let onError = (error) => {
@@ -67,17 +66,20 @@ const App = () => {
       }
       setUser({
         username: username,
-        color: randomColor()
+        color: randomColor(),
       })
-
-      const socket = new SockJS(SOCKET_URL);
-      client = Stomp.over(socket);
-      client.debug = () => { };
-      client.connect({}, () => onConnected(username), onError);
-      client.disconnect = onDisconnected;
     }).catch(err => {
       console.log('Error login', err);
     })
+  }
+
+  let connectSocket = (roomCode) => {
+    const socket = new SockJS(SOCKET_URL);
+    client = Stomp.over(socket);
+    client.debug = () => { };
+    client.connect({}, () => onConnected(user.username, roomCode), onError);
+    client.disconnect = onDisconnected;
+    console.log(`Sucribe /topic/group/${roomCode}`);
   }
 
   let handleRegisterSubmit = (username, password) => {
@@ -115,6 +117,8 @@ const App = () => {
       setErrorMessage("Create room success, Room code " + res.data.data.code);
       setShowErrorPopup(true);
       setEnteredRoom(true);
+      setRoomCode(res.data.data.code);
+      connectSocket(res.data.data.code);
     });
     setShowErrorPopup(false);
   };
@@ -130,6 +134,8 @@ const App = () => {
       setErrorMessage("Enter room success, Room name " + res.data.data.name);
       setShowErrorPopup(true);
       setEnteredRoom(true);
+      setRoomCode(res.data.data.code);
+      connectSocket(res.data.data.code);
     });
     setShowErrorPopup(false);
   };

@@ -31,5 +31,5 @@ import com.chatzone.model.Message;
  */
 public interface IMessageService {
 
-    public void sendMessage(Message msg);
+    public void sendMessage(String roomCode, Message msg);
 }
