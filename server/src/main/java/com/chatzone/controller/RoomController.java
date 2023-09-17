@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -47,15 +46,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api")
 public class RoomController {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomController.class);
-    
+
     @Autowired
     private IRoomService roomService;
-    
+
     @Autowired
     private ApiResponse apiResp;
-    
+
     @PostMapping(value = "/room")
     public ApiResponse create(@RequestBody Room room) {
         ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
@@ -68,14 +67,13 @@ public class RoomController {
             data.setName(ret.getSecond().getName());
             data.setCode(ret.getSecond().getCode());
             resp.setData(data);
-            return resp;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             resp = apiResp.getApiResponse(ECode.EXCEPTION);
         }
         return resp;
     }
-    
+
     @GetMapping(value = "/room/{code}")
     public ApiResponse find(@PathVariable String code) {
         ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
@@ -88,7 +86,6 @@ public class RoomController {
             data.setName(ret.getSecond().getName());
             data.setCode(ret.getSecond().getCode());
             resp.setData(data);
-            return resp;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             resp = apiResp.getApiResponse(ECode.EXCEPTION);

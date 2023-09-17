@@ -31,7 +31,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -49,23 +48,19 @@ public class MessageController {
     }
 
     @MessageMapping("/sendMessage/{roomCode}")
-    public void broadcastGroupMessage(@DestinationVariable String roomCode, @Payload Message message) {
+    public void broadcastGroupMessage(
+            @DestinationVariable String roomCode,
+            @Payload Message message) {
         message.setTimestamp(System.currentTimeMillis());
         service.sendMessage(roomCode, message);
     }
 
     @MessageMapping("/newUser")
     @SendTo("/topic/group")
-    public Message addUser(@Payload Message message,
+    public Message addUser(
+            @Payload Message message,
             SimpMessageHeaderAccessor headerAccessor) {
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         return message;
-    }
-
-    @MessageMapping("/greetings")
-    @SendToUser("/queue/test")
-    public String reply() {
-        System.out.println("Greetings");
-        return "Hello";
     }
 }
