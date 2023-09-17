@@ -4,7 +4,7 @@ const api = Axios.create({
     baseURL: 'http://localhost:8085/api/',
 });
 
-const chatAPI = {
+const chatHttpApi = {
     getMessages: (groupId) => {
         console.log('Calling get messages from API');
         return api.get(`messages/${groupId}`);
@@ -47,4 +47,4 @@ const chatAPI = {
 }
 
 
-export default chatAPI;
+export default chatHttpApi;

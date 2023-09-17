@@ -6,7 +6,7 @@ import Messages from './components/Messages/Messages';
 import { randomColor } from './utils/common';
 import SockJS from 'sockjs-client';
 import Stomp from 'webstomp-client';
-import chatAPI from './services/chatapi';
+import chatHttpApi from './services/chatHttpApi';
 import Popup from './components/Popup/Popup'
 import Room from './components/Room';
 
@@ -62,7 +62,7 @@ const App = () => {
   }
 
   let handleLoginSubmit = (username, password) => {
-    chatAPI.login(username, password).then(res => {
+    chatHttpApi.login(username, password).then(res => {
       if (res.data.err_code !== 0) {
         setErrorMessage(res.data.err_msg);
         setShowErrorPopup(true);
@@ -88,7 +88,7 @@ const App = () => {
 
   let handleRegisterSubmit = (username, password) => {
     console.log(`Register username ${username} pass ${password}`)
-    chatAPI.register(username, password).then(res => {
+    chatHttpApi.register(username, password).then(res => {
       if (res.data.err_code !== 0) {
         setErrorMessage(res.data.err_msg);
         setShowErrorPopup(true);
@@ -112,7 +112,7 @@ const App = () => {
 
   const handleCreateRoom = (roomName) => {
     console.log(`Creating room: ${roomName}`);
-    chatAPI.createRoom(roomName).then(res => {
+    chatHttpApi.createRoom(roomName).then(res => {
       if (res.data.err_code !== 0) {
         setErrorMessage(res.data.err_msg);
         setShowErrorPopup(true);
@@ -128,7 +128,7 @@ const App = () => {
   };
 
   const handleEnterRoom = (roomCode) => {
-    chatAPI.findRoom(roomCode).then(res => {
+    chatHttpApi.findRoom(roomCode).then(res => {
       console.log(res.data);
       if (res.data.err_code !== 0) {
         setErrorMessage(res.data.err_msg);
