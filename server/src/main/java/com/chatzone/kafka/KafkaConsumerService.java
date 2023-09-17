@@ -46,7 +46,12 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group.id}")
     public void receive(ConsumerRecord<String, Message> record) {
-        LOGGER.info(String.format("received key[%s] msg[%s]", record.key(), record.value()));
-        template.convertAndSend(String.format("/topic/group/%s", record.key()), record.value());
+        LOGGER.info(String.format("received key[%s] msg[%s]",
+                record.key(),
+                record.value()));
+        template.convertAndSend(
+                String.format("/topic/group/%s",
+                record.key()),
+                record.value());
     }
 }
