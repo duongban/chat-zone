@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author duongban
  */
 @RestController
-@RequestMapping(value = "/api", consumes = "application/json", produces = "application/json")
+@RequestMapping(value = "/api")
 public class AuthenController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenController.class);
@@ -57,12 +57,13 @@ public class AuthenController {
     public ApiResponse register(@RequestBody Authen auth) {
         ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
         try {
-            LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
+            LOGGER.info(String.format("Register username[%s] pass[%s]",
+                    auth.getUsername(),
+                    auth.getPassword()));
             Pair<ECode, UserEntity> ret = userService.create(auth);
             if (ECode.isFailed(ret.getFirst())) {
                 return apiResp.getApiResponse(ret.getFirst());
             }
-            return resp;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             resp = apiResp.getApiResponse(ECode.EXCEPTION);
@@ -74,12 +75,13 @@ public class AuthenController {
     public ApiResponse login(@RequestBody Authen auth) {
         ApiResponse resp = apiResp.getApiResponse(ECode.SUCCESS);
         try {
-            LOGGER.info(String.format("username[%s] pass[%s]", auth.getUsername(), auth.getPassword()));
+            LOGGER.info(String.format("Login username[%s] pass[%s]",
+                    auth.getUsername(),
+                    auth.getPassword()));
             Pair<ECode, UserEntity> ret = userService.get(auth);
             if (ECode.isFailed(ret.getFirst())) {
                 return apiResp.getApiResponse(ret.getFirst());
             }
-            return resp;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             resp = apiResp.getApiResponse(ECode.EXCEPTION);

@@ -51,25 +51,39 @@ public class ApiResponse {
     }
 
     public ApiResponse getApiResponse(ECode ecode) {
-        ApiResponse ret = new ApiResponse(ECode.NOT_DEFINED.getValue(), "Error");
+        ApiResponse ret = new ApiResponse(
+                ECode.NOT_DEFINED.getValue(),
+                "Error");
         switch (ecode) {
             case SUCCESS:
-                ret = new ApiResponse(ECode.SUCCESS.getValue(), "Success");
+                ret = new ApiResponse(
+                        ECode.SUCCESS.getValue(),
+                        "Success");
                 break;
             case FAILED:
-                ret = new ApiResponse(ECode.SUCCESS.getValue(), "Failed");
+                ret = new ApiResponse(
+                        ECode.SUCCESS.getValue(),
+                        "Failed");
                 break;
             case EXCEPTION:
-                ret = new ApiResponse(ECode.EXCEPTION.getValue(), "Exception");
+                ret = new ApiResponse(
+                        ECode.EXCEPTION.getValue(),
+                        "Exception");
                 break;
             case ALREADY_EXISTS_USERNAME:
-                ret = new ApiResponse(ECode.ALREADY_EXISTS_USERNAME.getValue(), "Already exists username");
+                ret = new ApiResponse(
+                        ECode.ALREADY_EXISTS_USERNAME.getValue(),
+                        "Already exists username");
                 break;
             case INVALID_USERNAME_OR_PASSWORD:
-                ret = new ApiResponse(ECode.INVALID_USERNAME_OR_PASSWORD.getValue(), "Invalid username or password");
+                ret = new ApiResponse(
+                        ECode.INVALID_USERNAME_OR_PASSWORD.getValue(),
+                        "Invalid username or password");
                 break;
             case NOT_EXSTS_ROOM:
-                ret = new ApiResponse(ECode.NOT_EXSTS_ROOM.getValue(), "Not exists room");
+                ret = new ApiResponse(
+                        ECode.NOT_EXSTS_ROOM.getValue(),
+                        "Not exists room");
                 break;
         }
         return ret;

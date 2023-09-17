@@ -51,7 +51,8 @@ public class WebSocketEventListener {
     private SimpMessagingTemplate template;
 
     private MessageHeaders createHeaders(String sessionId) {
-        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor
+                .create(SimpMessageType.MESSAGE);
         headerAccessor.setSessionId(sessionId);
         headerAccessor.setLeaveMutable(true);
         return headerAccessor.getMessageHeaders();
@@ -71,7 +72,9 @@ public class WebSocketEventListener {
                 msg.setContent(entity.getContent());
                 msg.setSender(entity.getSender());
                 msg.setTimestamp(entity.getTimestamp());
-                template.convertAndSendToUser(sessionId, "/queue/load-history", msg, createHeaders(sessionId));
+                template.convertAndSendToUser(
+                        sessionId, "/queue/load-history",
+                        msg, createHeaders(sessionId));
             }
         }
     }
