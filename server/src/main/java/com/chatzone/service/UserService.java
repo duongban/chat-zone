@@ -48,7 +48,7 @@ public class UserService implements IUserService {
 
     @Override
     public Pair<ECode, UserEntity> create(Authen user) {
-        Pair<ECode, UserEntity> ret = Pair.of(ECode.SUCCESS, new UserEntity());
+        Pair<ECode, UserEntity> ret;
         try {
             UserEntity data = repo.findByUsername(user.getUsername());
             if (data != null) {
