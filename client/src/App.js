@@ -21,6 +21,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [enteredRoom, setEnteredRoom] = useState(false);
   const [roomCode, setRoomCode] = useState(null);
+  const [popupKey, setPopupKey] = useState(0);
 
   let onConnected = (username, roomCode) => {
     console.log("Connected!!")
@@ -33,7 +34,15 @@ const App = () => {
       onMessageReceived(JSON.parse(message.body));
     });
 
-    sendNewUser(username);
+    sendNewUser(username, roomCode);
+
+    client.subscribe(`/topic/newUser/${roomCode}`, (message) => {
+      const msg = JSON.parse(message.body);
+      if (msg.sender !== user.username) {
+        setErrorMessage(`User ${msg.sender} has enter room`);
+        setPopupKey((prevKey) => prevKey + 1);
+      }
+    });
   }
 
   let onDisconnected = () => {
@@ -41,7 +50,6 @@ const App = () => {
   }
 
   let onMessageReceived = (msg) => {
-    console.log('New Message Received!!', msg);
     if (msg.content === 'newUser') {
       setConnectedUsers((users) => [...users, msg.sender]);
     } else {
@@ -102,12 +110,12 @@ const App = () => {
     setShowErrorPopup(false);
   }
 
-  let sendNewUser = (username) => {
+  let sendNewUser = (username, roomCode) => {
     const msg = {
       sender: username,
       content: 'newUser',
     };
-    client.send('/app/newUser', JSON.stringify(msg));
+    client.send(`/app/newUser/${roomCode}`, JSON.stringify(msg));
   };
 
   const handleCreateRoom = (roomName) => {
@@ -166,7 +174,7 @@ const App = () => {
       )}
 
       {showErrorPopup && (
-        <Popup message={errorMessage} />
+        <Popup message={errorMessage} key={popupKey}/>
       )}
     </div>
   )

@@ -30,7 +30,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -55,12 +54,9 @@ public class MessageController {
         service.sendMessage(roomCode, message);
     }
 
-    @MessageMapping("/newUser")
-    @SendTo("/topic/group")
-    public Message addUser(
-            @Payload Message message,
-            SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", message.getSender());
+    @MessageMapping("/newUser/{roomCode}")
+    @SendTo("/topic/newUser/{roomCode}")
+    public Message addUser(@Payload Message message) {
         return message;
     }
 }
