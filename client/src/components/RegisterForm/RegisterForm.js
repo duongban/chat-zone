@@ -31,6 +31,7 @@ const RegisterForm = ({ onSubmit }) => {
                 placeholder="Password"
                 onChange={handlePasswordChange}
                 margin="normal"
+                type="password"
             />
             <br />
             <Button variant="contained" color="primary" onClick={handleSubmit} >
