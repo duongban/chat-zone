@@ -67,7 +67,7 @@ public class RoomService implements IRoomService {
         try {
             RoomEntity data = repo.findByCode(code);
             if (data == null) {
-                return Pair.of(ECode.NOT_EXSTS_ROOM, new RoomEntity());
+                return Pair.of(ECode.NOT_EXISTS_ROOM, new RoomEntity());
             }
             ret = Pair.of(ECode.SUCCESS, data);
         } catch (Exception ex) {
