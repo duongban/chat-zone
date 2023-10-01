@@ -21,43 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.chatzone.model;
+package com.chatzone.util;
 
-import lombok.Getter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author duongban
  */
-@Getter
-public enum ECode {
-    SUCCESS(0),
-    FAILED(1),
-    EXCEPTION(2),
-    ALREADY_EXISTS_USERNAME(3),
-    INVALID_USERNAME_OR_PASSWORD(4),
-    NOT_EXISTS_ROOM(5),
-    INVALID_SESSION(6),
-    NOT_DEFINED(10);
-
-    private int value;
-
-    private ECode(int value) {
-        this.value = value;
+@Component
+public class JsonUtil {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtil.class);
+    
+    private final ObjectMapper objectMapper;
+    
+    public JsonUtil() {
+        this.objectMapper = new ObjectMapper();
     }
-
-    public ECode findByValye(int value) {
-        int ecode = Math.abs(value);
-        switch (ecode) {
-            case 0:
-                return SUCCESS;
-            case 1:
-                return FAILED;
+    
+    public String toJsonString(Object obj) {
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
-        return NOT_DEFINED;
-    }
-
-    public static boolean isFailed(ECode ecode) {
-        return ecode != ECode.SUCCESS;
+        return null;
     }
 }

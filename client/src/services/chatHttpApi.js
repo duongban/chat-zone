@@ -5,19 +5,6 @@ const api = Axios.create({
 });
 
 const chatHttpApi = {
-    getMessages: (groupId) => {
-        console.log('Calling get messages from API');
-        return api.get(`messages/${groupId}`);
-    },
-
-    sendMessage: (username, text) => {
-        let msg = {
-            sender: username,
-            content: text
-        }
-        return api.post(`send`, msg);
-    },
-
     register: (username, password) => {
         let msg = {
             username,
@@ -34,15 +21,23 @@ const chatHttpApi = {
         return api.post(`login`, msg);
     },
 
-    createRoom: (name) => {
+    createRoom: (name, session) => {
         let msg = {
             name,
         }
-        return api.post(`room`, msg);
+        return api.post(`room`, msg, {
+            headers: {
+                Session: session,
+            }
+        });
     },
 
-    findRoom: (code) => {
-        return api.get(`room/${code}`);
+    findRoom: (code, session) => {
+        return api.get(`room/${code}`, {
+            headers: {
+                Session: session,
+            }
+        });
     }
 }
 

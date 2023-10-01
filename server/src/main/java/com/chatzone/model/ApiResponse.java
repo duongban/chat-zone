@@ -80,10 +80,15 @@ public class ApiResponse {
                         ECode.INVALID_USERNAME_OR_PASSWORD.getValue(),
                         "Invalid username or password");
                 break;
-            case NOT_EXSTS_ROOM:
+            case NOT_EXISTS_ROOM:
                 ret = new ApiResponse(
-                        ECode.NOT_EXSTS_ROOM.getValue(),
+                        ECode.NOT_EXISTS_ROOM.getValue(),
                         "Not exists room");
+                break;
+            case INVALID_SESSION:
+                ret = new ApiResponse(
+                        ECode.INVALID_SESSION.getValue(),
+                        "Invalid session");
                 break;
         }
         return ret;

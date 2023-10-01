@@ -69,6 +69,14 @@ const App = () => {
     console.log('Failed to connect to WebSocket server', error);
   }
 
+  let onErrorInvalidSession = (error) => {
+    if (error === 6) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  }
+
   let handleLoginSubmit = (username, password) => {
     chatHttpApi.login(username, password).then(res => {
       if (res.data.err_code !== 0) {
@@ -79,6 +87,7 @@ const App = () => {
       setUser({
         username: username,
         color: randomColor(),
+        session: res.data.data.session,
       })
     }).catch(err => {
       console.log('Error login', err);
@@ -120,7 +129,7 @@ const App = () => {
 
   const handleCreateRoom = (roomName) => {
     console.log(`Creating room: ${roomName}`);
-    chatHttpApi.createRoom(roomName).then(res => {
+    chatHttpApi.createRoom(roomName, user.session).then(res => {
       if (res.data.err_code !== 0) {
         setErrorMessage(res.data.err_msg);
         setShowErrorPopup(true);
@@ -136,11 +145,12 @@ const App = () => {
   };
 
   const handleEnterRoom = (roomCode) => {
-    chatHttpApi.findRoom(roomCode).then(res => {
+    chatHttpApi.findRoom(roomCode, user.session).then(res => {
       console.log(res.data);
       if (res.data.err_code !== 0) {
         setErrorMessage(res.data.err_msg);
         setShowErrorPopup(true);
+        onErrorInvalidSession(res.data.err_code);
         return;
       }
       setErrorMessage("Enter room success, Room name " + res.data.data.name);
@@ -174,7 +184,7 @@ const App = () => {
       )}
 
       {showErrorPopup && (
-        <Popup message={errorMessage} key={popupKey}/>
+        <Popup message={errorMessage} key={popupKey} />
       )}
     </div>
   )
