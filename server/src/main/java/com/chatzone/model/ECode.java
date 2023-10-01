@@ -36,7 +36,8 @@ public enum ECode {
     EXCEPTION(2),
     ALREADY_EXISTS_USERNAME(3),
     INVALID_USERNAME_OR_PASSWORD(4),
-    NOT_EXSTS_ROOM(5),
+    NOT_EXISTS_ROOM(5),
+    INVALID_SESSION(6),
     NOT_DEFINED(10);
 
     private int value;
