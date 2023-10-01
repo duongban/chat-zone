@@ -28,9 +28,11 @@ import com.chatzone.model.ApiResponse;
 import com.chatzone.model.Authen;
 import com.chatzone.model.ECode;
 import com.chatzone.service.inf.IUserService;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,6 +54,9 @@ public class AuthenController {
 
     @Autowired
     private ApiResponse apiResp;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @PostMapping(value = "/register")
     public ApiResponse register(@RequestBody Authen auth) {
@@ -82,6 +87,11 @@ public class AuthenController {
             if (ECode.isFailed(ret.getFirst())) {
                 return apiResp.getApiResponse(ret.getFirst());
             }
+            Authen data = new Authen();
+            String session = UUID.randomUUID().toString();
+            data.setSession(session);
+            cacheManager.getCache("session").put(session, auth.getUsername());
+            resp.setData(data);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             resp = apiResp.getApiResponse(ECode.EXCEPTION);
