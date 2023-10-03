@@ -63,19 +63,21 @@ public class WebSocketEventListener {
         GenericMessage message = (GenericMessage) event.getMessage();
         String simpDestination = (String) message.getHeaders().get("simpDestination");
         String sessionId = (String) message.getHeaders().get("simpSessionId");
-        if (simpDestination != null) {
-            String[] parts = simpDestination.split("/");
-            String roomCode = parts[parts.length - 1];
-            List<MessageEntity> data = repo.findByRoomCode(roomCode);
-            for (MessageEntity entity : data) {
-                Message msg = new Message();
-                msg.setContent(entity.getContent());
-                msg.setSender(entity.getSender());
-                msg.setTimestamp(entity.getTimestamp());
-                template.convertAndSendToUser(
-                        sessionId, "/queue/load-history",
-                        msg, createHeaders(sessionId));
-            }
+        if (simpDestination == null
+                || !simpDestination.contains("/topic/group/")) {
+            return;
+        }
+        String[] parts = simpDestination.split("/");
+        String roomCode = parts[parts.length - 1];
+        List<MessageEntity> data = repo.findByRoomCode(roomCode);
+        for (MessageEntity entity : data) {
+            Message msg = new Message();
+            msg.setContent(entity.getContent());
+            msg.setSender(entity.getSender());
+            msg.setTimestamp(entity.getTimestamp());
+            template.convertAndSendToUser(
+                    sessionId, "/queue/load-history",
+                    msg, createHeaders(sessionId));
         }
     }
 }
