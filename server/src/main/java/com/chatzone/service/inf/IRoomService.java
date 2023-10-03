@@ -25,6 +25,7 @@ package com.chatzone.service.inf;
 
 import com.chatzone.db.entity.RoomEntity;
 import com.chatzone.model.ECode;
+import java.util.List;
 import org.springframework.data.util.Pair;
 
 /**
@@ -33,7 +34,9 @@ import org.springframework.data.util.Pair;
  */
 public interface IRoomService {
 
-    public Pair<ECode, RoomEntity> create(String name);
+    public Pair<ECode, RoomEntity> create(String name, String username);
 
     public Pair<ECode, RoomEntity> findByCode(String code);
+    
+    public Pair<ECode, List<RoomEntity>> findByCreatedBy(String createdBy);
 }

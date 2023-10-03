@@ -41,4 +41,6 @@ public class RoomEntity {
     private String id;
     private String name;
     private String code;
+    private String createdBy;
+    private Long createdAt;
 }

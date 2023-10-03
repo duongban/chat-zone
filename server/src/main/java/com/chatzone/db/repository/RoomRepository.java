@@ -24,6 +24,7 @@
 package com.chatzone.db.repository;
 
 import com.chatzone.db.entity.RoomEntity;
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -35,4 +36,6 @@ import org.springframework.stereotype.Repository;
 public interface RoomRepository extends MongoRepository<RoomEntity, String> {
 
     RoomEntity findByCode(String code);
+    
+    List<RoomEntity> findByCreatedBy(String createdBy);
 }

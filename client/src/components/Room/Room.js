@@ -1,11 +1,25 @@
 import React, { useState } from 'react';
-import { Button, TextField, Box, Container } from '@mui/material';
+import {
+  Button, TextField, Box, Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material';
 
-const EnterRoom = ({ onCreateRoom, onEnterRoom }) => {
+const EnterRoom = ({ onCreateRoom, onEnterRoom, userRooms }) => {
   const [showCreate, setShowCreate] = useState(false);
   const [showEnter, setShowEnter] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [roomCode, setRoomCode] = useState('');
+  const [selectedRoom, setSelectedRoom] = useState(null);
+
+  const handleRoomClick = (room) => {
+    setSelectedRoom(room);
+  };
 
   const toggleCreate = () => {
     setShowCreate(!showCreate);
@@ -78,6 +92,57 @@ const EnterRoom = ({ onCreateRoom, onEnterRoom }) => {
           </Box>
         )}
       </Box>
+
+      <h2>Your Rooms:</h2>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>No.</TableCell>
+                <TableCell>Room Name</TableCell>
+                <TableCell>Room Code</TableCell>
+                <TableCell>Enter room</TableCell>
+                <TableCell>Copy room code</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {userRooms.map((room, index) => (
+                <TableRow
+                  key={room.code}
+                  onClick={() => handleRoomClick(room)}
+                  sx={{
+                    backgroundColor:
+                      selectedRoom && selectedRoom.code === room.code
+                        ? '#e0e0e0'
+                        : 'transparent',
+                  }}
+                >
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{room.name}</TableCell>
+                  <TableCell>{room.code}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      onClick={() => onEnterRoom(room.code)}
+                    >
+                      Enter
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        navigator.clipboard.writeText(room.code);
+                      }}
+                    >
+                      Copy
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
     </Container>
   );
 };
