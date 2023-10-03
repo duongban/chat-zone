@@ -38,6 +38,14 @@ const chatHttpApi = {
                 Session: session,
             }
         });
+    },
+
+    getRoom: (session) => {
+        return api.get(`rooms`, {
+            headers: {
+                Session: session,
+            }
+        });
     }
 }
 
