@@ -64,7 +64,8 @@ public class AuthenFilter extends OncePerRequestFilter {
         try {
             String path = request.getRequestURI();
             if (!(path.endsWith("/login")
-                    || path.endsWith("register"))) {
+                    || path.endsWith("/register")
+                    || path.contains("/ws"))) {
                 String session = request.getHeader("Session");
                 String username = cacheManager
                         .getCache("session")
@@ -74,6 +75,7 @@ public class AuthenFilter extends OncePerRequestFilter {
                     response.getWriter().write(jsonUtil.toJsonString(resp));
                     return;
                 }
+                request.setAttribute("username", username);
             }
             filterChain.doFilter(request, response);
         } catch (ServletException | IOException ex) {
