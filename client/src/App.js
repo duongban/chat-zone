@@ -22,6 +22,7 @@ const App = () => {
   const [enteredRoom, setEnteredRoom] = useState(false);
   const [roomCode, setRoomCode] = useState(null);
   const [popupKey, setPopupKey] = useState(0);
+  const [userRooms, setUserRooms] = useState([]);
 
   let onConnected = (username, roomCode) => {
     console.log("Connected!!")
@@ -89,6 +90,7 @@ const App = () => {
         color: randomColor(),
         session: res.data.data.session,
       })
+      handleGetUserRooms(res.data.data.session);
     }).catch(err => {
       console.log('Error login', err);
     })
@@ -162,6 +164,20 @@ const App = () => {
     setShowErrorPopup(false);
   };
 
+  const handleGetUserRooms = (session) => {
+    chatHttpApi.getRoom(session).then(res => {
+      console.log(res.data);
+      if (res.data.err_code !== 0) {
+        setErrorMessage(res.data.err_msg);
+        setShowErrorPopup(true);
+        onErrorInvalidSession(res.data.err_code);
+        return;
+      }
+      setUserRooms(res.data.data);
+    });
+    setShowErrorPopup(false);
+  };
+
   useEffect(() => {
     console.log(connectedUsers);
   }, [connectedUsers]);
@@ -169,7 +185,7 @@ const App = () => {
   return (
     <div className="App">
       {!!user && !enteredRoom ? (
-        <Room onCreateRoom={handleCreateRoom} onEnterRoom={handleEnterRoom} />
+        <Room onCreateRoom={handleCreateRoom} onEnterRoom={handleEnterRoom} userRooms={userRooms}/>
       ) : null}
 
       {!!user && enteredRoom ? (
